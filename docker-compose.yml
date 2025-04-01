@@ -1,0 +1,42 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik_local
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Dashboard
+    command:
+      - "--log.level=DEBUG"
+      - "--accesslog=true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config:/etc/traefik/config:ro
+      - ./certs:/etc/traefik/certs:ro
+    networks:
+      - traefik_proxy
+
+  client:
+    image: nginx:alpine
+    container_name: client
+    volumes:
+      - ./client:/usr/share/nginx/html
+    expose:
+      - "80"
+    networks:
+      - traefik_proxy
+
+  api:
+    image: nginx:alpine
+    container_name: api
+    volumes:
+      - ./api:/usr/share/nginx/html
+    expose:
+      - "80"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy

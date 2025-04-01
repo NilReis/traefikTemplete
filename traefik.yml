@@ -1,0 +1,40 @@
+# traefik.yml (Static Configuration)
+
+# API and Dashboard configuration
+api:
+  dashboard: true
+  insecure: true # For local development ONLY
+
+# EntryPoints definition
+entryPoints:
+  web:
+    address: ":80"
+    # Optional: Redirect HTTP to HTTPS
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: ":443"
+
+# Providers configuration
+providers:
+  file:
+    directory: "/etc/traefik/config"
+    watch: true
+  docker:
+    endpoint: "unix:///var/run/docker.sock" # Connect to Docker socket
+    exposedByDefault: false # Do not expose containers unless explicitly enabled via labels
+    network: traefik_proxy # Use the network defined in docker-compose
+
+# Certificate Resolvers not needed for local self-signed certificates
+# as we define the certificates directly in dynamic configuration
+
+# Logging (Optional)
+# log:
+#   level: INFO # (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+#   filePath: /etc/traefik/traefik.log
+# accessLog:
+#   filePath: /etc/traefik/access.log

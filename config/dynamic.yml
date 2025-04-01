@@ -1,0 +1,31 @@
+tls:
+  certificates:
+    - certFile: "/etc/traefik/certs/local.pem"
+      keyFile: "/etc/traefik/certs/local-key.pem"
+
+http:
+  routers:
+    client:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`testclinete.heroapp.tech`)"
+      service: "client"
+      tls: {}
+
+    api:
+      entryPoints:
+        - "websecure"
+      rule: "Host(`testapi.heroapp.tech`)"
+      service: "api"
+      tls: {}
+
+  services:
+    client:
+      loadBalancer:
+        servers:
+          - url: "http://client:80"
+    
+    api:
+      loadBalancer:
+        servers:
+          - url: "http://api:80"
